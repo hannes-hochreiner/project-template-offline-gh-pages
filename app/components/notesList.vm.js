@@ -18,6 +18,16 @@ define(function() {
       that.repo.addNote({text: that.newNoteText()}).then(function(note) {
         that.newNoteText(null);
         that.notes.splice(0, 0, note);
+      }).fail(function(error) {
+        that.messages().push('Error initializing: ' + JSON.stringify(error));
+      }).done();
+    };
+    
+    that.noteDelete = function(note) {
+      that.repo.deleteNote(note).then(function() {
+        that.notes.splice(that.notes.indexOf(note), 1);
+      }).fail(function(error) {
+        that.messages().push('Error initializing: ' + JSON.stringify(error));
       }).done();
     };
     
