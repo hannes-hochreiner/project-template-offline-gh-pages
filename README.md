@@ -1,4 +1,4 @@
-Project Template: Offline Web-Application published via GitHub-Pages
+Project Template: Offline Web-Application published via GitHub-Pages [![Build Status](https://travis-ci.org/hannes-hochreiner/project-template-offline-gh-pages.svg?branch=master)](https://travis-ci.org/hannes-hochreiner/project-template-offline-gh-pages)
 ====================================================================
 
 For some time I have been interested in the idea of writing offline web applications.
