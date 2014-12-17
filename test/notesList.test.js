@@ -53,7 +53,52 @@ define(['../app/components/notesList.vm.js',
       test.equal(2, nl.notes().length);
       
       test.done();
-    });
+    }).done();
+  };
+  
+  obj.notesListNewEntry = function(test) {
+    var allNotesDef = Q.defer();
+    var addNoteDef = Q.defer();
+    var addNoteObj;
+    var nl = new NotesList({ ko: ko, repo: {
+      getAllNotes: function() { return allNotesDef.promise; },
+      addNote: function(obj) {
+        addNoteObj = obj;
+        return addNoteDef.promise;
+      }
+    } });
+    
+    test.expect(8);
+    
+    allNotesDef.resolve([ {
+      _id: 0,
+      text: 'testnote 1'
+    }, {
+      _id: 1,
+      text: 'testnote 2'
+    } ]);
+    
+    Q.delay(50).then(function() {
+      test.equal(false, nl.initializing());
+      test.equal(0, nl.messages().length);
+      test.equal(2, nl.notes().length);
+      
+      nl.newNoteText('testnote 3');
+      nl.newNoteSave();
+      
+      test.deepEqual({text: 'testnote 3'}, addNoteObj);
+      
+      addNoteDef.resolve({_id: 2, text: 'testnote 3'});
+    }).delay(50).then(function() {
+      test.equal(0, nl.messages().length);
+      test.equal(3, nl.notes().length);
+      test.equal(null, nl.newNoteText());
+      test.deepEqual({_id: 2, text: 'testnote 3'}, nl.notes()[0]);
+    }).fail(function(error) {
+      console.log(error);
+    }).fin(function() {
+      test.done();
+    }).done();
   };
   
   return obj;

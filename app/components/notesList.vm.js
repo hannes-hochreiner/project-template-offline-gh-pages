@@ -13,6 +13,14 @@ define(function() {
     that.messages = that.ko.observableArray();
     that.notes = that.ko.observableArray();
     
+    that.newNoteText = that.ko.observable();
+    that.newNoteSave = function() {
+      that.repo.addNote({text: that.newNoteText()}).then(function(note) {
+        that.newNoteText(null);
+        that.notes.splice(0, 0, note);
+      }).done();
+    };
+    
     // Initializing.
     that.repo.getAllNotes().then(function(notes) {
       that.notes(notes);
