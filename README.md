@@ -12,4 +12,4 @@ Manual set up
 =============
 
 Automatic deployment requires some manual setup.
-I followed the guide provided by (Ben Limmer)[http://benlimmer.com/2013/12/26/automatically-publish-javadoc-to-gh-pages-with-travis-ci/].
+I followed the guide provided by [Ben Limmer](http://benlimmer.com/2013/12/26/automatically-publish-javadoc-to-gh-pages-with-travis-ci/).
