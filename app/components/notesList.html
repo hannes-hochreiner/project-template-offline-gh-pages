@@ -1,3 +1,23 @@
 <div>
   <h2>Notes List</h2>
+  <!-- ko if: messages().length > 0 -->
+  <div>
+    <div data-bind="foreach: messages">
+      <p data-bind="text: $data"></p>
+    </div>
+  </div>
+  <!-- /ko -->
+  <!-- ko if: initializing -->
+  <p>...initializing...</p>
+  <!-- /ko -->
+  <!-- ko ifnot: initializing -->
+  <div>
+    <input type="text" data-bind="value: newNoteText"></input>
+    <button data-bind="click: newNoteSave">save</button>
+  </div>
+  <div data-bind="foreach: notes">
+    <p data-bind="text: text"></p>
+    <button data-bind="click: $parent.noteDelete">delete</button>
+  </div>
+  <!-- /ko -->
 </div>
