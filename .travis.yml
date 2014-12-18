@@ -3,3 +3,8 @@ node_js:
    - "0.10"
    - "0.8"
    - "0.6"
+env:
+  global:
+    - secure: "NL1H+KIoA9Ul/x0dVR5XHsfFVJS3xaydrbQ70BXRg0ML65IxpBWDMUtkVdv+t9jS25hhsBXdE6vMOHCxCOy4Kxm73UgtjTOl7RzSxpWvq0l6iEVIzmIM8O8P/KbR7eoTw0+8/HU6IgDMAA6r6WX8yQSZiGjFik2zoFU3kuv7oJI="
+after_success:
+- scripts/travis-ci_auto-publish.sh
