@@ -4,17 +4,6 @@ define([
   return function(utils, pouchdb) {
     var that = this;
     
-    var notes = [
-      {
-        _id: 0,
-        text: 'testnote 1'
-      },
-      {
-        _id: 1,
-        text: 'testnote 2'
-      }
-    ];
-    
     that.getAllNotes = function() {
       var def = Q.defer();
       
