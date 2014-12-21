@@ -1,0 +1,12 @@
+<div>
+  <!-- ko ifnot: editing -->
+  <span data-bind="text: syncEndpoint"></span>
+  <button data-bind="click: sync, enable: !initializing()">sync</button>
+  <button data-bind="click: syncEndpointEdit, enable: !initializing()">edit</button>
+  <!-- /ko -->
+  <!-- ko if: editing -->
+  <input type="text" data-bind="value: newSyncEndpoint"></input>
+  <button data-bind="click: newSyncEndpointSave">save</button>
+  <button data-bind="click: newSyncEndpointCancel">cancel</button>
+  <!-- /ko -->
+</div>
