@@ -17,6 +17,7 @@ require([
   'domReady!'
 ], function(ko, Repo, Utils, PouchDb) {
   ko.components.register('notes-list', { require: 'components/notesList' });
+  ko.components.register('sync-panel', { require: 'components/syncPanel' });
   
   function AppViewModel(repo) {
     var that = this;
@@ -25,5 +26,5 @@ require([
     that.ko = ko;
   }
 
-  ko.applyBindings(new AppViewModel(new Repo(new Utils(), new PouchDb('project-template'))));
+  ko.applyBindings(new AppViewModel(new Repo(new Utils(), new PouchDb('project-template'), new PouchDb('project-template-config'))));
 });
