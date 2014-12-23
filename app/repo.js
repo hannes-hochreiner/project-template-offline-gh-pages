@@ -1,8 +1,20 @@
 define([
   'q'
 ], function(Q) {
-  return function(utils, pouchdb, pouchdbConfig) {
+  return function(utils, pouchdb, pouchdbConfig, pubsub) {
     var that = this;
+    
+    pouchdb.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    }).on('create', function(change) {
+      pubsub.publish('noteCreated', change.doc);
+    }).on('update', function(change) {
+      pubsub.publish('noteUpdated', change.doc);
+    }).on('delete', function(change) {
+      pubsub.publish('noteDeleted', change.doc);
+    });
     
     that.getAllNotes = function() {
       var def = Q.defer();
@@ -11,19 +23,35 @@ define([
         def.resolve(docs.rows.map(function(entry) {
           return entry.doc;
         }));
+      }).catch(function(error) {
+        def.reject(error);
       });
       
       return def.promise;
     };
     
     that.addNote = function(note) {
-      return pouchdb.post(note).then(function(res) {
-        return pouchdb.get(res.id);
+      var def = Q.defer();
+      
+      pouchdb.post(note).then(function(res) {
+        def.resolve(res);
+      }).catch(function(error) {
+        def.reject(error);
       });
+      
+      return def.promise;
     };
     
     that.deleteNote = function(note) {
-      return pouchdb.remove(note);
+      var def = Q.defer();
+      
+      pouchdb.remove(note).then(function(res) {
+        def.resolve(res);
+      }).catch(function(error) {
+        def.reject(error);
+      });
+      
+      return def.promise;
     };
     
     that.getConfig = function(key) {
@@ -57,15 +85,15 @@ define([
     };
     
     that.sync = function(target) {
-      var def = Q.defer();
-      
-      pouchdb.sync(target).on('complete', function(info) {
-        def.resolve(info);
+      return pouchdb.sync(target, { live: true }).on('complete', function(info) {
+        pubsub.publish('syncDone', info);
       }).on('error', function(error) {
-        def.reject(error);
+        pubsub.publish('syncError', error);
+      }).on('change', function(info) {
+        pubsub.publish('syncDone', info);
+      }).on('uptodate', function(info) {
+        pubsub.publish('syncDone', info);
       });
-      
-      return def.promise;
     };
   };
 });
