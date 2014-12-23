@@ -61,7 +61,7 @@ define([
         def.resolve(doc);
       }).catch(function(err) {
         if (err.message === 'missing') {
-          def.resolve({});
+          def.resolve();
         } else {
           def.reject(err);
         }

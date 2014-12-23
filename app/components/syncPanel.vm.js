@@ -18,13 +18,23 @@ define(function() {
     that.syncTimestamp = that.ko.observable();
     that.syncToken = that.ko.observable();
     
+    that.synchronizing = that.ko.pureComputed(function() {
+      return typeof that.syncToken() !== 'undefined';
+    });
+    
+    that.syncPossible = that.ko.pureComputed(function() {
+      return typeof that.syncEndpoint() !== 'undefined' && that.syncEndpoint() !== '';
+    });
+    
     that.syncEndpointEdit = function() {
       that.newSyncEndpoint(that.syncEndpoint());
       that.editing(true);
     };
     
     that.sync = function() {
-      that.syncToken(that.repo.sync(that.syncEndpointObj.value));
+      if (typeof that.syncEndpointObj !== 'undefined') {
+        that.syncToken(that.repo.sync(that.syncEndpointObj.value));
+      }
     };
     
     that.newSyncEndpointSave = function() {
@@ -58,10 +68,6 @@ define(function() {
     }
     
     function syncError(msg, error) {
-      alert(JSON.stringify(error));
-      
-      console.log(that.syncToken());
-      
       if (typeof that.syncToken() !== 'undefined') {
         that.syncToken().cancel();
         that.syncToken(null);
@@ -69,14 +75,18 @@ define(function() {
     }
     
     that.repo.getConfig('syncEndpoint').then(function(res) {
-      m2vm(res);
+      if (typeof res !== 'undefined') {
+        m2vm(res);
+      }
     }).fail(function(error) {
-      alert(JSON.stringify(error));
+      console.log(error);
     }).fin(function() {
       that.pubsub.subscribe('syncDone', syncDone);
       that.pubsub.subscribe('syncError', syncError);
       that.sync();
       that.initializing(false);
-    }).done();
+    }).done(null, function(error) {
+      console.log(error);
+    });
   };
 });
