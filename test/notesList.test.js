@@ -4,15 +4,20 @@ if (typeof define !== 'function') {
 
 define(['../app/components/notesList.vm.js',
        '../lib/knockout/knockout-3.2.0',
-       '../lib/q/q'
-], function(NotesList, ko, Q) {
+       '../lib/q/q',
+       '../lib/pubsub/pubsub-1.5.0'
+], function(NotesList, ko, Q, pubsub) {
   var obj = {};
   
   obj.notesListInitFail = function(test) {
     var def = Q.defer();
-    var nl = new NotesList({ ko: ko, repo: {
-      getAllNotes: function() { return def.promise; }
-    } });
+    var nl = new NotesList({
+      ko: ko,
+      repo: {
+        getAllNotes: function() { return def.promise; }
+      },
+      pubsub: pubsub
+    });
     
     test.expect(7);
     
@@ -34,9 +39,13 @@ define(['../app/components/notesList.vm.js',
 
   obj.notesListInitSuccess = function(test) {
     var def = Q.defer();
-    var nl = new NotesList({ ko: ko, repo: {
-      getAllNotes: function() { return def.promise; }
-    } });
+    var nl = new NotesList({
+      ko: ko,
+      repo: {
+        getAllNotes: function() { return def.promise; }
+      },
+      pubsub: pubsub
+    });
     
     test.expect(7);
     
@@ -60,13 +69,17 @@ define(['../app/components/notesList.vm.js',
     var allNotesDef = Q.defer();
     var addNoteDef = Q.defer();
     var addNoteObj;
-    var nl = new NotesList({ ko: ko, repo: {
-      getAllNotes: function() { return allNotesDef.promise; },
-      addNote: function(obj) {
-        addNoteObj = obj;
-        return addNoteDef.promise;
-      }
-    } });
+    var nl = new NotesList({
+      ko: ko,
+      repo: {
+        getAllNotes: function() { return allNotesDef.promise; },
+        addNote: function(obj) {
+          addNoteObj = obj;
+          return addNoteDef.promise;
+        }
+      },
+      pubsub: pubsub
+    });
     
     test.expect(8);
     
@@ -88,7 +101,8 @@ define(['../app/components/notesList.vm.js',
       
       test.deepEqual({text: 'testnote 3'}, addNoteObj);
       
-      addNoteDef.resolve({_id: 2, text: 'testnote 3'});
+      addNoteDef.resolve();
+      pubsub.publish('noteCreated', {_id: 2, text: 'testnote 3'});
     }).delay(50).then(function() {
       test.equal(0, nl.messages().length);
       test.equal(3, nl.notes().length);
@@ -105,13 +119,17 @@ define(['../app/components/notesList.vm.js',
     var allNotesDef = Q.defer();
     var deleteNoteDef = Q.defer();
     var deleteNoteObj;
-    var nl = new NotesList({ ko: ko, repo: {
-      getAllNotes: function() { return allNotesDef.promise; },
-      deleteNote: function(obj) {
-        deleteNoteObj = obj;
-        return deleteNoteDef.promise;
-      }
-    } });
+    var nl = new NotesList({
+      ko: ko,
+      repo: {
+        getAllNotes: function() { return allNotesDef.promise; },
+        deleteNote: function(obj) {
+          deleteNoteObj = obj;
+          return deleteNoteDef.promise;
+        }
+      },
+      pubsub: pubsub
+    });
     
     test.expect(7);
     
@@ -133,6 +151,7 @@ define(['../app/components/notesList.vm.js',
       test.deepEqual({_id: 1, text: 'testnote 2'}, deleteNoteObj);
       
       deleteNoteDef.resolve();
+      pubsub.publish('noteDeleted', {_id: 1});
     }).delay(50).then(function() {
       test.equal(0, nl.messages().length);
       test.equal(1, nl.notes().length);

@@ -5,7 +5,8 @@ require.config({
     domReady: '../lib/require/domReady',
     text: '../lib/require/text',
     q: '../lib/q/q',
-    pouchdb: '../lib/pouchdb/pouchdb-3.2.0.min'
+    pouchdb: '../lib/pouchdb/pouchdb-3.2.0.min',
+    pubsub: '../lib/pubsub/pubsub-1.5.0'
   }
 });
 
@@ -14,8 +15,9 @@ require([
   'repo',
   'utils',
   'pouchdb',
+  'pubsub',
   'domReady!'
-], function(ko, Repo, Utils, PouchDb) {
+], function(ko, Repo, Utils, PouchDb, pubsub) {
   ko.components.register('notes-list', { require: 'components/notesList' });
   ko.components.register('sync-panel', { require: 'components/syncPanel' });
   
@@ -24,7 +26,13 @@ require([
     
     that.repo = repo;
     that.ko = ko;
+    that.pubsub = pubsub;
   }
 
-  ko.applyBindings(new AppViewModel(new Repo(new Utils(), new PouchDb('project-template'), new PouchDb('project-template-config'))));
+  ko.applyBindings(new AppViewModel(new Repo(
+                                              new Utils(),
+                                              new PouchDb('project-template'),
+                                              new PouchDb('project-template-config'),
+                                              pubsub
+                                            )));
 });
