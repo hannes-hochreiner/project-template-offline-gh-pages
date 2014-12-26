@@ -1,7 +1,12 @@
 <div>
   <!-- ko ifnot: editing -->
   <span data-bind="text: syncEndpoint"></span> last sync: <span data-bind="text: syncTimestamp"></span>
-  <button data-bind="click: sync, enable: !initializing()">sync</button>
+  <!-- ko if: syncPossible() && !synchronizing() -->
+  <button data-bind="click: syncStart">start sync</button>
+  <!-- /ko -->
+  <!-- ko if: synchronizing -->
+  <button data-bind="click: syncStop">stop sync</button>
+  <!-- /ko -->
   <button data-bind="click: syncEndpointEdit, enable: !initializing()">edit</button>
   <!-- /ko -->
   <!-- ko if: editing -->
